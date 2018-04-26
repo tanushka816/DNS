@@ -11,6 +11,7 @@ import hexdump
 # rt = p[2]
 
 def build_answer(id, rcode, queries, answers):
+    # print(answers)
     result = create_header(id, rcode, len(queries), len(answers))
     for d_name, qtype in queries:
         result += create_query(d_name, qtype)
@@ -18,8 +19,6 @@ def build_answer(id, rcode, queries, answers):
     for qtype, d_name, ttl, rdata in answers:
         result += create_rrecord(d_name, qtype, rdata, ttl)
 
-    # [print(line) for line in hexdump.dumpgen(result)]
-    # print(result)
     return result
 
 
@@ -27,6 +26,7 @@ def create_header(id, rcode, num_q, num_answ):
     fl = make_flag(rcode)
     result = struct.pack(">H2sHHHH", id, fl, num_q, num_answ, 0, 0)
     return result
+
 
 def create_query(d_name, qtype):
     result = make_name_bytes(d_name)
@@ -43,10 +43,6 @@ def create_rrecord(domain_name, qtype, r_data, ttl):
     result = b""
     result += make_name_bytes(domain_name)
     rdata_bytes = make_rdata(qtype, r_data)
-    # ttl = remove_time - time.time()
-    # ttl = int(ttl)
-    # print(rdata_bytes)
-    # print(ttl)
     result += struct.pack(">HHIH", qtype, 1, ttl, len(rdata_bytes))
     result += rdata_bytes
     return result
@@ -62,12 +58,16 @@ def make_name_bytes(domain_name):
     return result
 
 
-
 def make_rdata(qtype, r_data):
     if qtype == 1:
         return bytes(int(part) for part in r_data.split("."))
     if qtype == 2:
         return make_name_bytes(r_data)
+    if qtype == 6:
+        return make_name_bytes(r_data[0]) + make_name_bytes(r_data[1]) + \
+                 struct.pack(">IIIII", r_data[2], r_data[3], r_data[4], r_data[5], r_data[6])
+
+
 
 
 # def build_answer():
