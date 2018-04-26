@@ -1,36 +1,34 @@
-"""Два вида пакетов: запрос query, ответ responce
-"""
 import time
 import struct
 import bitstring
-"""" "db 42 01 00 00 01 00 01 00 00 00 00 03 77 77 77 " \
-"0c 6e 6f 72 74 68 65 61 73 74 65 72 6e 03 65 64 " \
-"75 00 00 01 00 01 c0 0c 00 01 00 01 00 00 02 58 " \
-"00 04 9b 21 11 44" """
-
-pac_ans2 = "AD 31 81 A0 00 01 00 05 00 00 00 01 02 72 75 00 " \
-           "00 02 00 01 C0 0C 00 02 00 01 00 00 22 29 00 10 " \
-           "01 61 03 64 6E 73 04 72 69 70 6E 03 6E 65 74 00 " \
-           "C0 0C 00 02 00 01 00 00 22 29 00 04 01 62 C0 22 " \
-           "C0 0C 00 02 00 01 00 00 22 29 00 04 01 64 C0 22 " \
-           "C0 0C 00 02 00 01 00 00 22 29 00 04 01 65 C0 22 " \
-           "C0 0C 00 02 00 01 00 00 22 29 00 04 01 66 C0 22 " \
-           "00 00 29 02 00 00 00 00 00 00 00"
-
-pac_ans = "13 F2 81 A0 00 01 00 00 00 01 00 01 02 72 75 00 " \
-          "00 01 00 01 C0 0C 00 06 00 01 00 00 00 F2 00 31 " \
-          "01 61 03 64 6E 73 04 72 69 70 6E 03 6E 65 74 00 " \
-          "0A 68 6F 73 74 6D 61 73 74 65 72 C0 26 00 3D 8C " \
-          "10 00 01 51 80 00 00 38 40 00 27 8D 00 00 00 0E " \
-          "10 00 00 29 02 00 00 00 00 00 00 00"
-
-b_iter = (int(byte, base=16) for byte in pac_ans2.split(" "))
-real_pac2 = bytes(b_iter)
-
-pac1 = b"\xdb\x42\x01\x00\x00\x01\x00\x01\x00\x00\x00\x00\x03\x77\x77\x77" \
-       b"\x0c\x6e\x6f\x72\x74\x68\x65\x61\x73\x74\x65\x72\x6e\x03\x65\x64" \
-       b"\x75\x00\x00\x01\x00\x01\xc0\x0c\x00\x01\x00\x01\x00\x00\x02\x58" \
-       b"\x00\x04\x9b\x21\x11\x44"
+# """" "db 42 01 00 00 01 00 01 00 00 00 00 03 77 77 77 " \
+# "0c 6e 6f 72 74 68 65 61 73 74 65 72 6e 03 65 64 " \
+# "75 00 00 01 00 01 c0 0c 00 01 00 01 00 00 02 58 " \
+# "00 04 9b 21 11 44" """
+#
+# pac_ans2 = "AD 31 81 A0 00 01 00 05 00 00 00 01 02 72 75 00 " \
+#            "00 02 00 01 C0 0C 00 02 00 01 00 00 22 29 00 10 " \
+#            "01 61 03 64 6E 73 04 72 69 70 6E 03 6E 65 74 00 " \
+#            "C0 0C 00 02 00 01 00 00 22 29 00 04 01 62 C0 22 " \
+#            "C0 0C 00 02 00 01 00 00 22 29 00 04 01 64 C0 22 " \
+#            "C0 0C 00 02 00 01 00 00 22 29 00 04 01 65 C0 22 " \
+#            "C0 0C 00 02 00 01 00 00 22 29 00 04 01 66 C0 22 " \
+#            "00 00 29 02 00 00 00 00 00 00 00"
+#
+# pac_ans = "13 F2 81 A0 00 01 00 00 00 01 00 01 02 72 75 00 " \
+#           "00 01 00 01 C0 0C 00 06 00 01 00 00 00 F2 00 31 " \
+#           "01 61 03 64 6E 73 04 72 69 70 6E 03 6E 65 74 00 " \
+#           "0A 68 6F 73 74 6D 61 73 74 65 72 C0 26 00 3D 8C " \
+#           "10 00 01 51 80 00 00 38 40 00 27 8D 00 00 00 0E " \
+#           "10 00 00 29 02 00 00 00 00 00 00 00"
+#
+# b_iter = (int(byte, base=16) for byte in pac_ans2.split(" "))
+# real_pac2 = bytes(b_iter)
+#
+# pac1 = b"\xdb\x42\x01\x00\x00\x01\x00\x01\x00\x00\x00\x00\x03\x77\x77\x77" \
+#        b"\x0c\x6e\x6f\x72\x74\x68\x65\x61\x73\x74\x65\x72\x6e\x03\x65\x64" \
+#        b"\x75\x00\x00\x01\x00\x01\xc0\x0c\x00\x01\x00\x01\x00\x00\x02\x58" \
+#        b"\x00\x04\x9b\x21\x11\x44"
 
 
 def parse_asked_package(package):
@@ -62,12 +60,21 @@ def parse_answer_package(package):
         d_name, typeq, remove_time, r_data, tmp_pos = parse_resource_record(package, position)
         position = tmp_pos
         answers.append((typeq, d_name, remove_time, r_data))
+    for i in range(num_aa):
+        d_name, typeq, remove_time, r_data, tmp_pos = parse_resource_record(package, position)
+        position = tmp_pos
+        answers.append((typeq, d_name, remove_time, r_data))
+    for i in range(num_ar):
+        d_name, typeq, remove_time, r_data, tmp_pos = parse_resource_record(package, position)
+        position = tmp_pos
+        answers.append((typeq, d_name, remove_time, r_data))
+    print(answers)
     return r_code, answers
 
 
 
 def parse_query(package, pos):
-    """There only question package part
+    """There only question package part -- name
     type_pack : A ~ 1; NS ~ 2
     :return normal domain naim, type, position
     """
@@ -76,7 +83,7 @@ def parse_query(package, pos):
     domain_name = ".".join([x.decode() for x in domain_name_part]) + "."
     cur_pos += used_bytes  # index type (2bytes) + class(2bytes) after
     type_pac = struct.unpack(">H", package[cur_pos:cur_pos + 2])[0]
-    cur_pos += 4  # number of next part (2bytes - type? 2bytes - class)
+    cur_pos += 4  # number of next part (2bytes - type + 2bytes - class)
     return domain_name, type_pac, cur_pos
 
 
@@ -154,14 +161,14 @@ def parse_flags(flags):
     return rcode
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     # a = b'\x02ru\x00\x00\x02\x00\x01\x00\x00E\xcc\x00\x10\x01a\x03dns\x04ripn\x03net\x00'
     # print(parse_resource_record(a, 0))
     # print(real_pac2)
-    real_pac3 = b'\x0e\xfb\x81\x80\x00\x01\x00\x05\x00\x00\x00\x00\x02ru\x00\x00\x02\x00\x01\x02ru\x00\x00\x02\x00\x01\x00\x00-]\x00\x10\x01a\x03dns\x04ripn\x03net\x00\x02ru\x00\x00\x02\x00\x01\x00\x00-]\x00\x10\x01b\x03dns\x04ripn\x03net\x00\x02ru\x00\x00\x02\x00\x01\x00\x00-]\x00\x10\x01d\x03dns\x04ripn\x03net\x00\x02ru\x00\x00\x02\x00\x01\x00\x00-]\x00\x10\x01e\x03dns\x04ripn\x03net\x00\x02ru\x00\x00\x02\x00\x01\x00\x00-]\x00\x10\x01f\x03dns\x04ripn\x03net\x00'
-    a = parse_answer_package(real_pac3)
-    for nore in a:
-        print(nore)
+    # real_pac3 = b'\x0e\xfb\x81\x80\x00\x01\x00\x05\x00\x00\x00\x00\x02ru\x00\x00\x02\x00\x01\x02ru\x00\x00\x02\x00\x01\x00\x00-]\x00\x10\x01a\x03dns\x04ripn\x03net\x00\x02ru\x00\x00\x02\x00\x01\x00\x00-]\x00\x10\x01b\x03dns\x04ripn\x03net\x00\x02ru\x00\x00\x02\x00\x01\x00\x00-]\x00\x10\x01d\x03dns\x04ripn\x03net\x00\x02ru\x00\x00\x02\x00\x01\x00\x00-]\x00\x10\x01e\x03dns\x04ripn\x03net\x00\x02ru\x00\x00\x02\x00\x01\x00\x00-]\x00\x10\x01f\x03dns\x04ripn\x03net\x00'
+    # a = parse_answer_package(real_pac3)
+    # for nore in a:
+    #     print(nore)
     # print(parse_flags(b'\x81\xa3'))
     # print(parse_query(pac1, 12, 1))
     # print(parse_resource_record(pac1, 38))
